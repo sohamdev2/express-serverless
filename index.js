@@ -1,6 +1,7 @@
 const serverless = require("serverless-http");
 const express = require("express");
 const app = express();
+app.use(express.json())
 
 const validator = require("./validator");
 const { getUsers, addUser, deleteUser } = require("./users");
@@ -12,13 +13,13 @@ app.get("/", (req, res, next) => {
 });
 
 app.post("/", validator, (req, res, next) => {
-  addUser(req.body.name)
+  addUser(JSON.parse(req.apiGateway.event.body).name)
     .then((user) => res.status(201).send(user))
     .catch((e) => res.status(500).json(e));
 });
 
 app.delete("/", validator, (req, res, next) => {
-  deleteUser(req.body.name)
+  deleteUser(JSON.parse(req.apiGateway.event.body).name)
     .then(() => res.sendStatus(200))
     .catch((e) => res.status(500).json(e));
 });
